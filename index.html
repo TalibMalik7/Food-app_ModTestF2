@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;800;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap');
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: 'Merriweather', serif;
+        }
+        button{
+            background-color: rgb(212, 61, 61);
+            color: white;
+            height: 40px;
+            border-color: aqua;
+            border-radius: 15px;
+            width: 100px;
+            cursor: pointer;
+            margin-left: 1rem;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.1);
+        }
+        button:hover{
+            transform: scale(1.1);
+        }
+        img:hover{
+            transform: scale(1.1);
+
+        }
+        .row{
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+        }
+        
+        .card-body{
+            margin: 1rem;
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.1);
+        }
+        img{
+            height:100px;
+            border-radius: 20px;
+            width: 100%;
+            object-fit: cover;
+        }
+        h1{
+            text-align: center;
+            margin: 30px;
+            color: rgb(120, 7, 7);
+            font-weight: bold;
+            border-radius: 15px;
+            border: 2px dotted black;
+            background-color: rgb(248, 248, 159);
+        } 
+        h2{
+            text-align: center;
+            margin: 30px;
+            color: rgb(240, 6, 6);
+            font-weight: bold;
+           
+            
+        } 
+    </style>
+</head>
+<body>
+    <h1>Welcome to DHABA</h1>
+    <h2>Click Menu Button To Select your Order</h2>
+    <button class="btn" onclick="getMenu()">Menu</button>
+
+    <div id="menu" class="row">
+        
+    </div>
+    <button id="order-btn" class="btn" >Place Order</button>
+    <button id="pay-btn" class="btn" >Pay for Order</button>
+    <script >
+        let arrayOfDishes=[];
+        async function getMenu() {
+        const response = await fetch("https://sandeep836.github.io/json/food.json");
+        const data = await response.json();
+        const menu = document.getElementById("menu");
+        data.forEach((item) => {
+            menu.innerHTML += `
+            <div class="card-body">
+                <img src="${item.imgSrc}" alt="${item.imageAlt}" width="50%">
+                <h2>${item.name}</h2>
+                <p>${item.price} Rs</p>
+            </div>
+            `;
+            arrayOfDishes.push(item.name);
+        });
+        }
+        
+        function takeOrder() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+            const order = {
+                // burgers: [arrayOfDishes[Math.floor(Math.random() * arrayOfDishes.length)], arrayOfDishes[Math.floor(Math.random() * arrayOfDishes.length)], arrayOfDishes[Math.floor(Math.random() * arrayOfDishes.length)]]
+                //choosing cheeseburger
+                burgers: [arrayOfDishes[0], arrayOfDishes[0], arrayOfDishes[0]]
+            };
+            console.log(order.burgers);
+            resolve(order);
+            }, 2500);
+        });
+        }
+        
+        function orderPrep() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+            resolve({order_status: true, paid: false});
+            }, 1500);
+        });
+        }
+        
+        function payOrder() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+            resolve({order_status: true, paid: true});
+            }, 1000);
+        });
+        }
+        
+        function thankyouFnc() {
+        alert("Thank you for eating with us today!");
+        }
+        
+        // Attach event listener to order button
+        const orderBtn = document.getElementById("order-btn");
+        orderBtn.addEventListener("click", async () => {
+        try {
+            const order = await takeOrder();
+            console.log("Order placed: ", order);
+        
+            const orderStatus = await orderPrep();
+            console.log("Order status: ", orderStatus);
+        
+        
+        } catch (error) {
+            console.error(error);
+        }
+        });
+        const paybtn = document.getElementById("pay-btn");
+        paybtn.addEventListener("click", async () => {
+            try {
+            const payment = await payOrder();
+            console.log("Payment status: ", payment);
+        
+            if (payment.paid) {
+                thankyouFnc();
+            }
+            } catch (error) {
+            console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
